@@ -20,14 +20,27 @@ const mongoose = require('mongoose');
 
 const Dishes = require('./models/dishes');
 
-const url = config.mongoUrl
-const connect = mongoose.connect(url);
+// const url = config.mongoUrl
+// const connect = mongoose.connect(url);
 
-connect.then((db) => {
-	console.log("Connected correctly to the server");
-}, (err) => {
-	console.log(err)
-})
+// connect.then((db) => {
+//   useNewUrlParser: true,
+//     useUnifiedTopology: true,
+// 	console.log("Connected correctly to the server");
+// }, (err) => {
+// 	console.log(err)
+// })
+
+mongoose
+  .connect(config.mongoUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+   useCreateIndex: true
+  })
+  .then(() => console.log("Connected to Mongo...."))
+  .catch((error) => console.log(error.message));
+
+
 
 let app = express();
 app.all('*', (req, res, next) => {
@@ -50,6 +63,7 @@ app.use(passport.initialize())
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/imageUpload', uploadRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 

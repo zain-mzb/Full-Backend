@@ -24,7 +24,13 @@ const upload = multer({ storage: storage, fileFilter: imageFileFilter});
 
 const uploadRouter = express.Router();
 
-uploadRouter.use(bodyParser.json());
+// uploadRouter.use(bodyParser.json());
+uploadRouter.use(express.urlencoded({ extended: true }));
+uploadRouter.use(express.json());
+// uploadRouter.use(express.urlencoded({
+//   extended: true
+// }));
+
 
 uploadRouter.route('/')
 .get(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
