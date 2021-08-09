@@ -3,14 +3,15 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const authenticate = require('../authenticate')
 const Leaders = require('../models/leaders')
-
+const cors = require('./cors');
 const leaderRouter = express.Router()
 
 leaderRouter.use(bodyParser.json())
 
 leaderRouter.route('/(:leaderId)?')
+.options(cors.corsWithOptions, (req,res)=> { res.sendStatus(200) })
 
-.get((req, res, next) => {
+.get(cors.cors, (req, res, next) => {
 	if(req.params.leaderId){
 		Leaders.findById(req.params.leaderId)
 		.then((leader) => {
@@ -29,7 +30,7 @@ leaderRouter.route('/(:leaderId)?')
 	}, (err) => next(err))
 	.catch((err) => next(err))
 })
-.post(authenticate.verifyUser, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
 	if(req.params.leaderId){
 		res.statusCode = 403
 		res.end('POST operation not supported on /leaders/' + req.params.leaderId)
@@ -44,7 +45,7 @@ leaderRouter.route('/(:leaderId)?')
 	}, (err) => next(err))
 	.catch((err) => next(err))
 })
-.put(authenticate.verifyUser, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
 	if(req.params.leaderId){
 		Leaders.findByIdAndUpdate(req.params.leaderId, {
 			$set: req.body
@@ -61,7 +62,7 @@ leaderRouter.route('/(:leaderId)?')
 	res.statusCode = 403
 	res.end('PUT operation bot supported on leaders')
 })
-.delete(authenticate.verifyUser, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
 	if(req.params.leaderId){
 		Leaders.findByIdAndRemove(req.params.leaderId)
 		.then((resp) => {
